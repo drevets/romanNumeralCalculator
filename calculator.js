@@ -56,7 +56,6 @@ const numberToArray = (number) => {
     let powerOfTen = Number(digit) * Math.pow(10, power)
     digitsArray.push({number: powerOfTen, power})
   }
-  console.log('digitsArray', digitsArray)
   return digitsArray
 }
 
@@ -67,23 +66,71 @@ const numberArrayToNumeral = (numberArray, numberValues) => {
     if (numberValues[number]) numeralString += numberValues[number]
     else numeralString += findNumeral(numberArray[i])
   }
+  console.log('numeralString', numeralString)
   return numeralString
 }
+
+// so I could start at 0 and start adding single numerals.
+//if I get more than 3 numerals in a row, then I'll switch it to VI and then keep adding, and if I get VIIII, then I'll switch to IX
+
+//this is horrible and I hope to be able to remove some of this hard coding....
 
 const findNumeral = (numberData, numberValues) => {
   let number = numberData.number
   let numeralValue = 0;
   let numeral = ''
+  let numeralCount = 0;
+  let overHalf = false
   if (numberData.power === 0) {
     while (numeralValue < number) {
-
+      numeral += 'I'
+      numeralCount++
+      overHalf = numeralValue >= number / 2 ? true : false
+      numeralValue ++
+      if (numeralCount === 4) {
+        numeral = overHalf ? 'IX' : 'IV'
+        numeralCount = 0
+        if (overHalf) numeralValue += 1
+      }
+    console.log('numeralValue', numeralValue, 'numeral', numeral)
     }
   }
-  if (numberData.power === 1) console.log('tensDigit')
-  if (numberData.power === 2) console.log('hundredsDigit')
-  if (numberData.power >+ 3) console.log('thousandsDigit++')
+  if (numberData.power === 1) {
+    while (numeralValue < number) {
+      numeral += 'X'
+      numeralCount++
+      overHalf = numeralValue >= number / 2 ? true : false
+      numeralValue += 10
+      if (numeralCount === 4) {
+        numeral = overHalf ? 'XL' : 'XC'
+        numeralCount = 0
+        if (overHalf) numeralValue += 10
+      }
+    }
+  }
+  if (numberData.power === 2) {
+    while (numeralValue < number) {
+      numeral += 'C'
+      numeralCount++
+      overHalf = numeralValue >= number / 2 ? true : false
+      numeralValue += 100
+      if (numeralCount === 4) {
+        numeral = overHalf ? 'CD' : 'CM'
+        numeralCount = 0
+        if (overHalf) numeralValue += 100
+      }
+    }
+  }
+  if (numberData.power >= 3) {
+    while (numeralValue < number) {
+      numeral += 'M'
+      numeralValue += 1000
+    }
+  }
+  console.log('numeral', numeral)
+  return numeral
 }
 
-let numberArray = numberToArray(14)
+let numberArray = numberToArray(8)
 
 numberArrayToNumeral(numberArray, numberValues)
